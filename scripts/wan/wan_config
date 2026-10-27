@@ -54,10 +54,25 @@ fnc_wan_config_guardar_manual() {
 ###  Configurar Mostrar
 ######################################################################
 
-fnc_wan_config_mostrar_opcio1() {
-	echo fnc_wan_config_mostrar_opcio1
+fnc_wan_config_mostrar_parametres() {
+	echo fnc_wan_config_mostrar_parametres
+
+	echo "$WAN_MODE $WAN_INT $WAN_IP_MASC $WAN_PE $WAN_DNS"
 }
 
-fnc_wan_config_mostrar_opcio2() {
-	echo fnc_wan_config_mostrar_opcio2
+fnc_wan_config_mostrar_interfaces() {
+	echo fnc_wan_config_mostrar_interfaces
+
+	for interf in /sys/class/net/*; do
+		nom=$(basename "$interf")
+
+		# Excloure loopback
+		[[ "$nom" == "lo" ]] && continue
+
+		# Excloure interfícies Wi-Fi
+		[[ -d "$interf/wireless" ]] && continue
+
+		echo "$nom"
+    	done
+	
 }

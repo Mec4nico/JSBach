@@ -8,7 +8,7 @@ source "$SCRIPT_DIR/../utils/variables.conf"
 ######################################################################
 
 fnc_wan_configurar() {
-	echo fnc_wan_configurar
+	#echo fnc_wan_configurar
 	MSG="Error: opcio desconeguda falta [ guardar | mostrar ]"
 
 	# Comprovem que hi hagi almenys un argument
@@ -38,7 +38,7 @@ fnc_wan_configurar() {
 ######################################################################
 
 fnc_wan_config_guardar() {
-	echo fnc_wan_config_guardar
+	#echo fnc_wan_config_guardar
 	MSG="Error: opcio desconeguda falta [ dhcp | manual ]"
 
 	# Comprovem que hi hagi almenys un argument

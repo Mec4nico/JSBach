@@ -4,12 +4,47 @@
 ###  Iniciar
 ######################################################################
 fnc_enrutar_iniciar() {
-	echo fnc_enrutar_iniciar
+
+	RESULTAT=$($DIR_ENRUTAR/enrutar estat| head -n 1)
+
+	if [ "$RESULTAT" = "$ACTIVAT" ]; then
+	    echo "Ja esta actiu"
+	    exit 1
+	fi
+	
+	##############################
+	###  no definitiva 
+	##############################
+	ip a a 10.0.1.1/24 dev enp7s0
+	ip l s dev enp7s0 up
+	##############################
+	source $DIR_WAN/wan.conf
+	sysctl -w net.ipv4.ip_forward=1
+	iptables -t nat -A POSTROUTING -o  $WAN_INT -j MASQUERADE
+	
+
 }
 
 ######################################################################
 ###  Aturar
 ######################################################################
 fnc_enrutar_aturar() {
-	echo fnc_enrutar_aturar
+	
+	RESULTAT=$($DIR_ENRUTAR/enrutar estat| head -n 1)
+
+	if [ "$RESULTAT" = "$DESACTIVAT" ]; then
+	    echo "Ja esta desactivat"
+	    exit 1
+	fi
+	
+	##############################
+	###  no definitiva 
+	##############################
+	ip a d 10.0.1.1/24 dev enp7s0
+	ip l s dev enp7s0 down
+	##############################
+	source $DIR_WAN/wan.conf
+	sysctl -w net.ipv4.ip_forward=0
+	iptables -t nat -D POSTROUTING -o $WAN_INT   -j MASQUERADE
+
 }

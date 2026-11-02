@@ -4,7 +4,7 @@
 ###  Estat
 ######################################################################
 fnc_wan_estat() {
-	echo fnc_wan_estat
+	#echo fnc_wan_estat
 		
 	if systemctl is-active --quiet NetworkManager; then
 		echo "$DESACTIVAT"

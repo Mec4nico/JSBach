@@ -4,7 +4,7 @@
 ###  Iniciar
 ######################################################################
 fnc_wan_iniciar() {
-	echo fnc_wan_iniciar
+	#echo fnc_wan_iniciar
 	
 	case "$WAN_MODE" in
 	dhcp)
@@ -33,7 +33,7 @@ fnc_wan_iniciar() {
 ###  Aturar
 ######################################################################
 fnc_wan_aturar() {
-	echo fnc_wan_aturar
+	#echo fnc_wan_aturar
 
 	case "$WAN_MODE" in
 	dhcp)

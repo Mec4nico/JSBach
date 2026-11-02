@@ -1,11 +1,13 @@
 #!/bin/bash
 
+IP="127.0.0.1"
+
 HISTFILE="$HOME/.jbs_cli_history"
 
 # Carrega historial existent
 history -r "$HISTFILE" 2>/dev/null
 
-PROMPT=$(echo "prompt" | nc 127.0.0.1 1234)
+PROMPT=$(echo "prompt" | nc $IP 1234)
 
 while true; do
 	read -e -p "$PROMPT> " cmd
@@ -22,5 +24,5 @@ while true; do
 		break
 	fi
 
-	echo "$cmd" | nc 127.0.0.1 1234
+	echo "$cmd" | nc $IP 1234
 done

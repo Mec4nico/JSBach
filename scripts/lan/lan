@@ -1,0 +1,155 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/../utils/variables.conf"
+
+######################################################################
+###  Configurar
+######################################################################
+
+fnc_lan_configurar() {
+	echo fnc_lan_configurar
+	MSG="Error: opcio desconeguda falta [ vlan | bridge ]"
+
+	# Comprovem que hi hagi almenys un argument
+	if [ $# -lt 1 ]; then
+		echo "$MSG"
+		exit 1
+	fi
+
+	OPCIO_1=$1
+	shift
+
+	case "$OPCIO_1" in
+	vlan)
+		fnc_lan_config_vlan $@
+		;;
+	bridge)
+		fnc_lan_config_bridge $@
+		;;
+	*)
+		echo "$MSG"
+		;;
+	esac
+}
+
+######################################################################
+###  Configurar VLAN
+######################################################################
+
+fnc_lan_config_vlan() {
+	echo fnc_lan_config_vlan
+	MSG="Error: opcio desconeguda falta [ guardar | esborrar | modificar | mostrar ]"
+
+	# Comprovem que hi hagi almenys un argument
+	if [ $# -lt 1 ]; then
+		echo "$MSG"
+		exit 1
+	fi
+
+	OPCIO_1=$1
+	shift
+	# Fem switch IFW_PEr executar la funció que toca
+	case "$OPCIO_1" in
+	guardar)
+		source "$DIR_LAN/lan_config_vlan"
+		fnc_lan_config_vlan_guardar $@
+		;;
+	esborrar)
+		source "$DIR_LAN/lan_config_vlan"
+		fnc_lan_config_vlan_esborrar $@
+		;;
+	modificar)
+		source "$DIR_LAN/lan_config_vlan"
+		fnc_lan_config_vlan_modificar $@
+		;;
+	mostrar)
+		source "$DIR_LAN/lan_config_vlan"
+		fnc_lan_config_vlan_mostrar $@
+		;;
+	*)
+		echo "$MSG"
+		;;
+	esac
+}
+
+######################################################################
+###  Configurar BRIDGE
+######################################################################
+
+fnc_lan_config_bridge() {
+	MSG="Error: opcio desconeguda falta [ guardar | esborrar | modificar | mostrar ]"
+
+
+	# Comprovem que hi hagi almenys un argument
+	if [ $# -lt 1 ]; then
+		echo "$MSG"
+		exit 1
+	fi
+
+	OPCIO_1=$1
+	shift
+	# Fem switch IFW_PEr executar la funció que toca
+	case "$OPCIO_1" in
+	guardar)
+		source "$DIR_LAN/lan_config_bridge"
+		fnc_lan_config_bridge_guardar $@
+		;;
+	esborrar)
+		source "$DIR_LAN/lan_config_bridge"
+		fnc_lan_config_bridge_esborrar $@
+		;;
+	modificar)
+		source "$DIR_LAN/lan_config_bridge"
+		fnc_lan_config_bridge_modificar $@
+		;;
+	mostrar)
+		source "$DIR_LAN/lan_config_bridge"
+		fnc_lan_config_bridge_mostrar $@
+		;;
+	*)
+		echo "$MSG"
+		;;
+	esac
+}
+
+######################################################################
+###  MAIN
+######################################################################
+
+source "$DIR_BD/lan_bd"
+fnc_lan_inici_bd
+
+source "$DIR_LAN/lan.conf"
+
+MSG="Error: opcio desconeguda falta [ iniciar | aturar | configurar | estat ]"
+
+# Comprovem que hi hagi almenys un argument
+if [ $# -lt 1 ]; then
+	echo "$MSG"
+	exit 1
+fi
+
+OPCIO_1=$1
+shift
+
+case "$OPCIO_1" in
+iniciar)
+	source "$DIR_LAN/lan_iniciar_aturar"
+	fnc_lan_iniciar $@
+	;;
+aturar)
+	source "$DIR_LAN/lan_iniciar_aturar"
+	fnc_lan_aturar $@
+	;;
+configurar)
+	fnc_lan_configurar $@
+	;;
+estat)
+	source "$DIR_LAN/lan_estat"
+	fnc_lan_estat $@
+	;;
+*)
+	echo "$MSG"
+	;;
+esac

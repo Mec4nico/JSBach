@@ -1,0 +1,61 @@
+#!/bin/bash
+
+######################################################################
+###  Iniciar
+######################################################################
+fnc_lan_iniciar() {
+	echo fnc_lan_iniciar
+	
+	###########################
+	###  Vlans
+	###########################
+	
+	ip l a name br0 type bridge vlan_filtering 1
+	ip l s dev br0 up
+	
+	sqlite3 "$DIR_BD/$BD" "
+	SELECT vlan.vid, lan.ip_gateway, lan.if_lan
+	FROM vlan JOIN lan ON vlan.lan_id = lan.id;
+	"| while IFS='|' read -r vid ip_gateway if_lan; do
+		ip l a l br0 name "$if_lan" type vlan id "$vid"
+		ip a a "$ip_gateway" dev "$if_lan"
+		ip l s dev "$if_lan" up
+	done
+	
+	###########################
+	###  Tag Untag
+	###########################	
+	
+	sqlite3 "$DIR_BD/$BD" "
+	SELECT interface,vlan_untag,vlans_tag FROM bridge_ports;
+	"| while IFS='|' read -r interface vlan_untag vlans_tag; do
+		ip l s "$interface" master br0
+		ip l s dev "$interface" up
+		bridge vlan del dev $interface vid 1 pvid untagged
+		if [ "$vlan_untag" != "0" ]; then
+			bridge vlan add dev $interface vid $vlan_untag pvid untagged
+			bridge vlan add dev br0 vid $vlan_untag self
+		fi
+		if [ "$vlans_tag" != "0" ]; then
+			for CAMP in ${vlans_tag//,/ }; do
+				bridge vlan add dev $interface vid $CAMP
+				bridge vlan add dev br0 vid $CAMP self
+			done
+		fi
+	done
+	
+	
+}
+
+######################################################################
+###  Aturar
+######################################################################
+fnc_lan_aturar() {
+	echo fnc_lan_aturar
+	
+	###########################
+	###  Vlans
+	###########################
+	
+	ip l d name br0 type bridge vlan_filtering 1
+}

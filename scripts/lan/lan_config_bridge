@@ -1,0 +1,75 @@
+#!/bin/bash
+
+
+fnc_lan_config_bridge_guardar() {
+	echo fnc_lan_config_bridge_guardar
+	
+	MSG="Error: son tres arguments: intefaç untag tag"
+
+	# Comprovem que hi hagi almenys un argument
+	if [ $# -lt 3 ]; then
+		echo "$MSG"
+		exit 1
+	fi
+	
+	interface=$1
+	vlan_untag=$2
+	vlans_tag=$3
+	
+	sqlite3 "$DIR_BD/$BD" "
+	PRAGMA foreign_keys=ON;
+	
+	INSERT OR IGNORE INTO bridge_ports (interface,vlan_untag,vlans_tag) 
+	VALUES ('$interface','$vlan_untag','$vlans_tag');
+	"
+
+}
+
+fnc_lan_config_bridge_esborrar() {
+	echo fnc_lan_config_bridge_esborrar
+	
+		
+	MSG="Error: un argument: interfaç "
+
+	# Comprovem que hi hagi almenys un argument
+	if [ $# -lt 1 ]; then
+		echo "$MSG"
+		exit 1
+	fi
+	
+	sqlite3 "$DIR_BD/$BD" "
+	PRAGMA foreign_keys = ON;
+	
+	DELETE FROM bridge_ports
+	WHERE interface = '$1';
+	"
+}
+
+
+fnc_lan_config_bridge_modificar() {
+	echo fnc_lan_config_bridge_modificar
+	
+	MSG="Error: son tres arguments: intefaç untag tag"
+
+	# Comprovem que hi hagi almenys un argument
+	if [ $# -lt 3 ]; then
+		echo "$MSG"
+		exit 1
+	fi
+	
+	interface=$1
+	vlan_untag=$2
+	vlans_tag=$3
+	
+	sqlite3 "$DIR_BD/$BD" "
+	PRAGMA foreign_keys = ON;
+	
+	UPDATE bridge_ports
+	SET vlan_untag='$vlan_untag', vlans_tag='$vlans_tag'
+	WHERE interface='$interface';
+	"
+}
+
+fnc_lan_config_bridge_mostrar() {
+	echo fnc_lan_config_bridge_mostrar
+}

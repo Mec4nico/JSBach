@@ -7,7 +7,50 @@ fnc_lan_inici_bd() {
 	######################################################################
 	# Creacio de taules
 	######################################################################
-	echo ""
 	
+	sqlite3 "$DIR_BD/$BD" "
+	PRAGMA foreign_keys=ON;
+
+	CREATE TABLE IF NOT EXISTS lan (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		ip_xarxa TEXT NOT NULL UNIQUE,
+		ip_gateway TEXT NOT NULL,
+		if_lan TEXT NOT NULL UNIQUE);	
+	
+	CREATE TABLE IF NOT EXISTS vlan (
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		vid INTEGER NOT NULL UNIQUE,
+		nom TEXT NOT NULL,
+		lan_id INTEGER NOT NULL UNIQUE,
+		FOREIGN KEY(lan_id) REFERENCES lan(id) ON DELETE CASCADE);
+
+	CREATE TABLE IF NOT EXISTS bridge_ports (
+		interface TEXT PRIMARY KEY, 
+		vlan_untag INTEGER DEFAULT '0', 
+		vlans_tag TEXT DEFAULT '0');
+		
+		
+		
+	BEGIN;
+
+		INSERT OR IGNORE INTO lan (ip_xarxa,ip_gateway,if_lan) 
+		VALUES ('10.0.1.0/24','10.0.1.1/24','br0.1');
+
+		INSERT OR IGNORE INTO vlan (vid, nom,lan_id)
+		SELECT 1, 'Admin', id
+		FROM lan
+		WHERE ip_xarxa='10.0.1.0/24';
+		
+		INSERT OR IGNORE INTO lan (ip_xarxa,ip_gateway,if_lan) 
+		VALUES ('10.0.2.0/24','10.0.2.1/24','br0.2');
+
+		INSERT OR IGNORE INTO vlan (vid, nom,lan_id)
+		SELECT 2, 'DMZ', id
+		FROM lan
+		WHERE ip_xarxa='10.0.2.0/24';
+
+	COMMIT;
+
+	"
 }
 
